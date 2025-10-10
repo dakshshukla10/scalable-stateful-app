@@ -1,4 +1,4 @@
-import {test,describe} from "bun:test";
+import {test,describe, expect} from "bun:test";
 
 const BACKEND_URL = "ws://localhost:8080";
 
@@ -8,7 +8,7 @@ describe("Chat application" , () => {
         const ws2 = new WebSocket(BACKEND_URL);
 
         await new Promise<void>((resolve) => {
-            let count = 1
+            let count = 0;
             ws1.onopen = () => {
                 count = count + 1
                 if (count == 2){
@@ -34,10 +34,20 @@ describe("Chat application" , () => {
             type: "join-room",
             room: "Room 1"
         }))
+        
+        await new Promise<void>((resolve) => {
+            ws2.onmessage = ({data}) => {
+                const parsedData = JSON.parse(data);
+                expect(parsedData.type == "chat")
+                expect(parsedData.message == "Hello Daksh , this is ws1 speaking")
+                resolve()
+        }
 
-        ws1.send(JSON.stringify({
-            type: "join-chat",
-            room: "Hi There!"
-        }))
+            ws1.send(JSON.stringify({
+                type: "chat",
+                room: "Room 1",
+                message: "Hello Daksh , this is ws1 speaking"
+            }))
+        })
     })
 })
