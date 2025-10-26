@@ -7,7 +7,7 @@ describe("Chat application" , () => {
         const ws1 = new WebSocket(BACKEND_URL);
         const ws2 = new WebSocket(BACKEND_URL);
 
-        await new Promise<void>((resolve) => {
+        await new Promise<void>((resolve,reject) => {
             let count = 0;
             ws1.onopen = () => {
                 count = count + 1

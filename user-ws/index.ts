@@ -25,6 +25,7 @@ wss.on('connection', function connection(ws) {
         }
         rooms[room].sockets.push(ws);
     }
+
     if (parsedData.type == "chat"){
         const room = parsedData.room;
         if (rooms[room]){
@@ -33,7 +34,6 @@ wss.on('connection', function connection(ws) {
             ws.send(JSON.stringify({ error: "Room does not exist" }));
         }
     }
+    
   });
-
-  ws.send('something');
 });
