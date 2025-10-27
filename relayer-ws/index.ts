@@ -1,18 +1,20 @@
 import { WebSocketServer, WebSocket } from 'ws';
 
-const wss = new WebSocketServer({port:8080});
+// Central relay that other backend servers connect to so they can share messages.
+const wss = new WebSocketServer({port:3001});
 
+// Track every backend server that connects so we can rebroadcast messages later.
 const servers: WebSocket[] = []
 
 wss.on('connection', function connection(ws){
     ws.on('error',console.error);
 
-    //Whenever there is a message
+    // Remember this connected server so it receives future messages.
     servers.push(ws);
 
     ws.on('message',function message(data:string){
-        //We make sure to send received message to all server except the one who sent it
-        servers.filter(socket => socket != ws).map(socket => {
+        // Forward the payload to every connected server (including the sender for now).
+        servers.forEach(socket => {
             socket.send(data);
         })
     });
